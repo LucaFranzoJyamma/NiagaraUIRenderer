@@ -183,7 +183,7 @@ public:
 		for (auto AssetIt = SelectedAssets.CreateConstIterator(); AssetIt; ++AssetIt)
 		{
 			const FAssetData& Asset = *AssetIt;
-			AnyMaterials = AnyMaterials || (Asset.AssetClass == UMaterial::StaticClass()->GetFName());
+			AnyMaterials = AnyMaterials || (Asset.ToSoftObjectPath().GetAssetPath() == UMaterial::StaticClass()->GetClassPathName());
 		}
 
 		if (AnyMaterials)
