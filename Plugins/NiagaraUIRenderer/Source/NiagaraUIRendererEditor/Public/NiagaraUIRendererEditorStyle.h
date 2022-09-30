@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 
-#include "Classes/EditorStyleSettings.h"
 #include "Styling/SlateStyle.h"
 
 /**

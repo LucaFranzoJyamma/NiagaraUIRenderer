@@ -86,7 +86,7 @@ void FNiagaraWidgetDetailCustomization::CheckWarnings()
 
 	UNiagaraUIComponent* NiagaraComponent = CachedNiagaraWidget->GetNiagaraComponent();
 
-	if (!NiagaraComponent || !NiagaraComponent->GetSystemInstance())
+	if (!NiagaraComponent || !NiagaraComponent->GetSystemInstanceController())
 		return;
 
 	TArray<FString> GPUWarningEmitterNames;
@@ -94,13 +94,14 @@ void FNiagaraWidgetDetailCustomization::CheckWarnings()
 	TArray<FString> DomainWarningRendererNames;
 	TArray<FString> DomainWarningMaterialNames;
 
-	for(TSharedRef<const FNiagaraEmitterInstance, ESPMode::ThreadSafe> EmitterInst : NiagaraComponent->GetSystemInstance()->GetEmitters())
+	for(TSharedRef<const FNiagaraEmitterInstance, ESPMode::ThreadSafe> EmitterInst : NiagaraComponent->GetSystemInstanceController()->GetSystemInstance_Unsafe()->GetEmitters())
 	{
-		if (UNiagaraEmitter* Emitter = EmitterInst->GetCachedEmitter())
+		if (FVersionedNiagaraEmitterData* Emitter = EmitterInst->GetCachedEmitterData())
 		{
+			FString EmitterName = EmitterInst->GetCachedEmitter().Emitter->GetName();
 			if (Emitter->SimTarget != ENiagaraSimTarget::CPUSim)
 			{
-				GPUWarningEmitterNames.Add(Emitter->GetName());
+				GPUWarningEmitterNames.Add(EmitterName);
 			}
 			else
 			{
@@ -126,7 +127,7 @@ void FNiagaraWidgetDetailCustomization::CheckWarnings()
 
 						if (ActualMaterial && ActualMaterial->GetMaterial()->MaterialDomain != EMaterialDomain::MD_UI)
 						{
-							DomainWarningEmitterNames.Add(Emitter->GetName());
+							DomainWarningEmitterNames.Add(EmitterName);
 							DomainWarningRendererNames.Add(Property->GetName());
 							DomainWarningMaterialNames.Add(ActualMaterial->GetName());
 
@@ -180,7 +181,7 @@ void FNiagaraWidgetDetailCustomization::DisplayWarningBox(IDetailLayoutBuilder& 
 		.WholeRowContent()
 		[
 			SNew(SBorder)
-			.BorderImage(FEditorStyle::GetBrush("NoBorder"))
+			.BorderImage(FAppStyle::GetBrush("NoBorder"))
 			.Padding(FMargin(0.f, 10.f, 15.f, 10.f))
 			[
 				SNew(SVerticalBox)
@@ -296,12 +297,12 @@ void FNiagaraWidgetDetailCustomization::OnAutoPopulatePressed()
 
 	UNiagaraUIComponent* NiagaraComponent = CachedNiagaraWidget->GetNiagaraComponent();
 
-	if (!NiagaraComponent || !NiagaraComponent->GetSystemInstance())
+	if (!NiagaraComponent || !NiagaraComponent->GetSystemInstanceController())
 		return;
 
-	for(TSharedRef<const FNiagaraEmitterInstance, ESPMode::ThreadSafe> EmitterInst : NiagaraComponent->GetSystemInstance()->GetEmitters())
+	for(TSharedRef<const FNiagaraEmitterInstance, ESPMode::ThreadSafe> EmitterInst : NiagaraComponent->GetSystemInstanceController()->GetSystemInstance_Unsafe()->GetEmitters())
 	{
-		if (UNiagaraEmitter* Emitter = EmitterInst->GetCachedEmitter())
+		if (FVersionedNiagaraEmitterData* Emitter = EmitterInst->GetCachedEmitterData())
 		{
 			if (Emitter->SimTarget == ENiagaraSimTarget::CPUSim)
 			{

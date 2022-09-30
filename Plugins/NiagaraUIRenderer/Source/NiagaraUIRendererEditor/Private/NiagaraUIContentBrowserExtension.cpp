@@ -64,7 +64,7 @@ struct FCreateNiagaraUIMaterialsExtension : public FContentBrowserSelectedAssetE
 
 			NewMaterial->MaterialDomain = EMaterialDomain::MD_UI;
 
-			for (UMaterialExpression* Expression : NewMaterial->Expressions)
+			for (const TObjectPtr<UMaterialExpression> Expression : NewMaterial->GetExpressions())
 			{
 				//if (UMaterialExpressionParticleColor* ParticleColor = Cast<UMaterialExpressionParticleColor>(Expression))
 				//if (Expression->IsA(UMaterialExpressionParticleColor::StaticClass()))
@@ -89,7 +89,7 @@ struct FCreateNiagaraUIMaterialsExtension : public FContentBrowserSelectedAssetE
 					if (EmissiveInput->Expression == nullptr && BaseInput->Expression)
 						EmissiveInput->Expression = BaseInput->Expression;
 
-					for (UMaterialExpression* TestExp : NewMaterial->Expressions)
+					for (const TObjectPtr<UMaterialExpression> TestExp : NewMaterial->GetExpressions())
 					{
 						TArray<FExpressionInput*> Inputs = TestExp->GetInputs();
 
